@@ -1,0 +1,41 @@
+{
+    "name": "oriolsegura/laravel-decimal",
+    "version": "0.1.0",
+    "description": "Value Object to handle decimals in Laravel without losing precision and directly from Eloquent models.",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "decimal",
+        "precision"
+    ],
+    "authors": [
+        {
+            "name": "Oriol Segura",
+            "email": "oriol.segura.nino@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "ext-bcmath": "*",
+        "illuminate/contracts": "^11.0 || ^12.0",
+        "illuminate/database": "^11.0 || ^12.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-f": "vendor/bin/phpunit --filter"
+    },
+    "autoload": {
+        "psr-4": {
+            "OriolSegura\\Decimal\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OriolSegura\\Decimal\\Tests\\": "tests/"
+        }
+    }
+}

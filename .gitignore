@@ -1,0 +1,22 @@
+# IDEs and editors
+.idea
+.vscode
+
+# OS files
+.DS_Store
+
+# PHP and Composer
+composer.lock
+vendor/
+
+# PHPUnit
+.phpunit.result.cache
+phpunit.xml
+
+# Tests and coverage
+coverage/
+
+# Laravel specific
+.env
+.env.*.backup
+storage/
