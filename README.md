@@ -1,12 +1,11 @@
 # Laravel Decimal
 
 A lightweight, immutable Value Object to handle decimals in Laravel without losing precision.
-It uses `bcmath` internally to ensure `0.1 + 0.2 === 0.3`.
 
 ## Requirements
 
 - PHP 8.2+
-- Laravel 10.0+
+- Laravel 11.0+
 
 ## Installation
 
