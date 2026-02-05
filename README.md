@@ -103,10 +103,11 @@ $result = $val->plus(5)->minus(2)->times(2); // (10 + 5 - 2) * 2 = 26
 
 These are the implemented methods for arithmetic operations:
 
-- `add(self|int|string $other)` (alias: `plus`, `sum`)
+- `plus(self|int|string $other)` (alias: `add`, `sum`)
 - `minus(self|int|string $other)` (alias: `take`, `subtract`)
-- `dividedBy(self|int|string $other, int|null $scale = null)` (alias: `div`)
 - `times(self|int|string $other)` (alias: `mul`, `multiply`)
+- `dividedBy(self|int|string $other, int|null $scale = null)` (alias: `div`)
+- `mod(self|int|string $other)` (alias: `modulo`, `remainder`)
 - `abs()`
 - `negate()` (aliases: `neg`)
 - `inverse()` (aliases: `inv`, `reciprocal`)
@@ -129,7 +130,7 @@ And these are the implemented methods for comparisons:
 
 ## Division & Rounding
 
-By default, division uses an automatic scale equal to the maximum of the two operands,
+By default, division uses an automatic scale equal to the maximum of the two operands scales,
 ensuring this is also at least 12 decimal places to ensure precision. But you can also
 provide a `$scale` parameter to specify the number of decimal places in the result.
 

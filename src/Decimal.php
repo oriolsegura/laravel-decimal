@@ -330,9 +330,32 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->minus($other);
     }
 
+    public function times(self|int|string $other): self
+    {
+        $other = self::from($other);
+        $scale = $this->scale + $other->scale;
+
+        return self::from(bcmul(
+            $this->value,
+            $other->value,
+            scale: $scale,
+        ));
+    }
+
+    public function mul(self|int|string $other): self
+    {
+        return $this->times($other);
+    }
+
+    public function multiply(self|int|string $other): self
+    {
+        return $this->times($other);
+    }
+
     /**
      * Divide the current value by another value.
-     * If no scale is provided, it calculates the minimum necessary scale (at least 12).
+     * If no scale is provided, it uses an automatic scale equal to the maximum of the two operands scales,
+     * ensuring this is also at least 12 decimal places to ensure precision.
      * If scale is provided, it applies Half-Up Rounding.
      *
      * @throws DivisionByZeroException
@@ -379,10 +402,56 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return self::from(bcadd($truncated, $unit, scale: $scale));
     }
 
+    /**
+     * @throws DivisionByZeroException
+     */
     public function div(self|int|string $other, int|null $scale = null): self
     {
         return $this->dividedBy($other, scale: $scale);
     }
+
+    /**
+     * Get the modulus of the division. Its sign matches the dividend's ($this).
+     *
+     * It uses an automatic scale equal to the maximum of the two operands scales,
+     * ensuring this is also at least 12 decimal places to ensure precision
+     *
+     * @throws DivisionByZeroException
+     */
+    public function mod(self|int|string $other): self
+    {
+        $other = self::from($other);
+
+        if ($other->isZero()) {
+            throw new DivisionByZeroException();
+        }
+
+        return self::from(bcmod(
+            $this->value,
+            $other->value,
+            scale: max($this->scale, $other->scale, self::MIN_DIV_SCALE),
+        ));
+    }
+
+    /**
+     * @throws DivisionByZeroException
+     */
+    public function modulo(self|int|string $other): self
+    {
+        return $this->mod($other);
+    }
+
+    /**
+     * @throws DivisionByZeroException
+     */
+    public function remainder(self|int|string $other): self
+    {
+        return $this->mod($other);
+    }
+
+    // ──────────────────────────────
+    // Special Operations
+    // ──────────────────────────────
 
     public function inverse(): self
     {
@@ -397,28 +466,6 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function reciprocal(): self
     {
         return $this->inverse();
-    }
-
-    public function times(self|int|string $other): self
-    {
-        $other = self::from($other);
-        $scale = $this->scale + $other->scale;
-
-        return self::from(bcmul(
-            $this->value,
-            $other->value,
-            scale: $scale,
-        ));
-    }
-
-    public function mul(self|int|string $other): self
-    {
-        return $this->times($other);
-    }
-
-    public function multiply(self|int|string $other): self
-    {
-        return $this->times($other);
     }
 
     public function negate(): self

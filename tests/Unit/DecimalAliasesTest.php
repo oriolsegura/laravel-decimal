@@ -38,6 +38,13 @@ class DecimalAliasesTest extends TestCase
         $expected = '2';
         $this->assertSame($expected, (string) $base->dividedBy($other));
         $this->assertSame($expected, (string) $base->div($other));
+
+        // 5. MODULUS (Canonical: mod)
+        // Aliases: modulo, remainder
+        $expected = '4';
+        $this->assertSame($expected, (string) $base->mod(6));
+        $this->assertSame($expected, (string) $base->modulo(6));
+        $this->assertSame($expected, (string) $base->remainder(6));
     }
 
     public function test_it_checks_comparison_aliases(): void
@@ -80,15 +87,7 @@ class DecimalAliasesTest extends TestCase
 
     public function test_it_checks_special_operation_aliases(): void
     {
-        // 1. NEGATE (Canonical: negate)
-        // Alias: neg
-        $d = Decimal::from(5);
-
-        $expected = '-5';
-        $this->assertSame($expected, (string) $d->negate());
-        $this->assertSame($expected, (string) $d->neg());
-
-        // 2. INVERSE (Canonical: inverse)
+        // 1. INVERSE (Canonical: inverse)
         // Aliases: inv, reciprocal
         $d = Decimal::from(2);
 
@@ -96,5 +95,13 @@ class DecimalAliasesTest extends TestCase
         $this->assertSame($expected, (string) $d->inverse());
         $this->assertSame($expected, (string) $d->inv());
         $this->assertSame($expected, (string) $d->reciprocal());
+
+        // 2. NEGATE (Canonical: negate)
+        // Alias: neg
+        $d = Decimal::from(5);
+
+        $expected = '-5';
+        $this->assertSame($expected, (string) $d->negate());
+        $this->assertSame($expected, (string) $d->neg());
     }
 }
