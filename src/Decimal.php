@@ -88,6 +88,11 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             {
                 return is_null($value) ? null : (string) $value;
             }
+
+            public function serialize(Model $model, string $key, mixed $value, array $attributes): string|null
+            {
+                return is_null($value) ? null : (string) $value;
+            }
         };
     }
 

@@ -90,7 +90,7 @@ class DecimalCastTest extends TestCase
         $this->assertNull($product->price_decimal);
     }
 
-    public function it_serializes_to_json_correctly(): void
+    public function test_it_serializes_to_json_correctly(): void
     {
         $product = Product::create([
             'price_decimal' => '99.99',
