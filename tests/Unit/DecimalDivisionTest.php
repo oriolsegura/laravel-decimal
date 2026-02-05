@@ -82,7 +82,6 @@ class DecimalDivisionTest extends TestCase
         $this->assertSame('0.12', (string) $result4);
     }
 
-    /** @test */
     public function test_it_handles_carry_over_rounding(): void
     {
         $d = Decimal::from('1.99996');
@@ -91,7 +90,6 @@ class DecimalDivisionTest extends TestCase
         $this->assertSame('2', (string) $result);
     }
 
-    /** @test */
     public function test_it_handles_negative_rounding_symmetrically(): void
     {
         $result = Decimal::from(-2)->dividedBy(3, scale: 2);

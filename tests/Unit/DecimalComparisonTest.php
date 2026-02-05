@@ -13,7 +13,7 @@ class DecimalComparisonTest extends TestCase
         $d2 = Decimal::from('1.5000');
 
         $this->assertTrue($d1->eq($d2));
-        $this->assertTrue($d1->equals('1.5'));
+        $this->assertTrue($d1->eq('1.5'));
     }
 
     public function test_it_checks_greater_and_less_than(): void

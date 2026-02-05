@@ -10,6 +10,14 @@ use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use Stringable;
 
+/**
+ * @author Oriol Segura <oriol.segura.nino@gmail.com>
+ *
+ * @immutable
+ * An immutable Value Object for handling high-precision decimals in Laravel,
+ * compatible with Eloquent casting and JSON serialization.
+ * Provides a rich set of methods for arithmetic operations and comparisons while ensuring data integrity.
+ */
 final readonly class Decimal implements Castable, JsonSerializable, Stringable
 {
     private const MIN_DIV_SCALE = 12;
@@ -19,6 +27,11 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         private int $scale,
     ) {}
 
+    /**
+     * Create a new Decimal instance from a string, integer, or another Decimal.
+     *
+     * @throws WrongDecimalFormatException If the format is invalid.
+     */
     public static function from(self|int|string|null $value): self
     {
         if ($value instanceof self) {
@@ -31,7 +44,10 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     }
 
     /**
-     * @return array{0: string, 1: int} [value, scale]
+     * Parse and validate the input value.
+     *
+     * @return array{0: string, 1: int} Returns [string value, int scale]
+     * @throws WrongDecimalFormatException
      */
     public static function validateAndAnalyze(int|string|null $value): array
     {
@@ -70,11 +86,17 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return [$value, $scale];
     }
 
+    /**
+     * Create a Decimal instance representing zero.
+     */
     public static function zero(): self
     {
         return self::from('0');
     }
 
+    /**
+     * Get the caster class to use when casting from / to this cast target.
+     */
     public static function castUsing(array $arguments): CastsAttributes
     {
         return new class implements CastsAttributes
@@ -308,6 +330,13 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->minus($other);
     }
 
+    /**
+     * Divide the current value by another value.
+     * If no scale is provided, it calculates the minimum necessary scale (at least 12).
+     * If scale is provided, it applies Half-Up Rounding.
+     *
+     * @throws DivisionByZeroException
+     */
     public function dividedBy(self|int|string $other, int|null $scale = null): self
     {
         $other = self::from($other);
@@ -409,5 +438,39 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         }
 
         return $this;
+    }
+
+    // ──────────────────────────────
+    // Checks & Converters
+    // ──────────────────────────────
+
+    /**
+     * Check if the value represents a whole number (has no significant decimals).
+     *
+     * Relies on validateAndAnalyze to adjust the scale correctly.
+     */
+    public function isInteger(): bool
+    {
+        return $this->scale === 0;
+    }
+
+    /**
+     * Convert the value to a native PHP integer.
+     *
+     * @warning This may result in data loss or overflow if the value exceeds PHP_INT_MAX.
+     */
+    public function toInt(): int
+    {
+        return (int) $this->value;
+    }
+
+    /**
+     * Convert the value to a native PHP float.
+     *
+     * @warning Precision is likely to be lost due to IEEE 754 limitations.
+     */
+    public function toFloat(): float
+    {
+        return (float) $this->value;
     }
 }

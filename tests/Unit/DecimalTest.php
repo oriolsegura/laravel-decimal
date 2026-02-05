@@ -31,7 +31,7 @@ class DecimalTest extends TestCase
         $b = Decimal::from('0.2');
 
         // In IEEE 754, 0.1 + 0.2 results in 0.30000000000000004
-        $result = $a->add($b);
+        $result = $a->plus($b);
 
         $this->assertSame('0.3', (string) $result);
         $this->assertSame(1, $result->getScale());
@@ -41,7 +41,7 @@ class DecimalTest extends TestCase
     {
         $original = Decimal::from('10');
 
-        $new = $original->add('5');
+        $new = $original->plus('5');
 
         $this->assertSame('10', (string) $original);
         $this->assertSame('15', (string) $new);
