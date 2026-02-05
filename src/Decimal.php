@@ -145,9 +145,29 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->eq($other);
     }
 
+    public function ne(self|int|string $other): bool
+    {
+        return ! $this->eq($other);
+    }
+
+    public function notEquals(self|int|string $other): bool
+    {
+        return $this->ne($other);
+    }
+
+    public function diff(self|int|string $other): bool
+    {
+        return $this->ne($other);
+    }
+
     public function gt(self|int|string $other): bool
     {
         return $this->cmp($other) === 1;
+    }
+
+    public function greaterThan(self|int|string $other): bool
+    {
+        return $this->gt($other);
     }
 
     public function gte(self|int|string $other): bool
@@ -155,14 +175,29 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->cmp($other) >= 0;
     }
 
+    public function greaterThanOrEqual(self|int|string $other): bool
+    {
+        return $this->gte($other);
+    }
+
     public function lt(self|int|string $other): bool
     {
         return $this->cmp($other) === -1;
     }
 
+    public function lessThan(self|int|string $other): bool
+    {
+        return $this->lt($other);
+    }
+
     public function lte(self|int|string $other): bool
     {
         return $this->cmp($other) <= 0;
+    }
+
+    public function lessThanEqual(self|int|string $other): bool
+    {
+        return $this->lte($other);
     }
 
     public function isZero(): bool
@@ -241,6 +276,11 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->plus($other);
     }
 
+    public function sum(self|int|string $other): self
+    {
+        return $this->plus($other);
+    }
+
     public function minus(self|int|string $other): self
     {
         $other = self::from($other);
@@ -254,6 +294,11 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     }
 
     public function take(self|int|string $other): self
+    {
+        return $this->minus($other);
+    }
+
+    public function subtract(self|int|string $other): self
     {
         return $this->minus($other);
     }
@@ -300,9 +345,24 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return self::from(bcadd($truncated, $unit, scale: $scale));
     }
 
+    public function div(self|int|string $other, int|null $scale = null): self
+    {
+        return $this->dividedBy($other, scale: $scale);
+    }
+
     public function inverse(): self
     {
         return self::from('1')->dividedBy($this);
+    }
+
+    public function inv(): self
+    {
+        return $this->inverse();
+    }
+
+    public function reciprocal(): self
+    {
+        return $this->inverse();
     }
 
     public function times(self|int|string $other): self
@@ -317,9 +377,24 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         ));
     }
 
+    public function mul(self|int|string $other): self
+    {
+        return $this->times($other);
+    }
+
+    public function multiply(self|int|string $other): self
+    {
+        return $this->times($other);
+    }
+
     public function negate(): self
     {
         return $this->times('-1');
+    }
+
+    public function neg(): self
+    {
+        return $this->neg();
     }
 
     public function abs(): self
