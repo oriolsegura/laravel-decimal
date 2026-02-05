@@ -394,7 +394,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
 
     public function neg(): self
     {
-        return $this->neg();
+        return $this->negate();
     }
 
     public function abs(): self
