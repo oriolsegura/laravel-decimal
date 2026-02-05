@@ -26,12 +26,6 @@ $result = $a->add($b);
 echo $result; // "0.3"
 ```
 
-## Running Tests
-
-```bash
-composer test
-```
-
 ## License
 
 This package is open-sourced software licensed under the [MIT license](LICENSE).

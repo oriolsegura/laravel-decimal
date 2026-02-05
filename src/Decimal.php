@@ -12,6 +12,8 @@ use Stringable;
 
 final readonly class Decimal implements Castable, JsonSerializable, Stringable
 {
+    private const MIN_DIV_SCALE = 12;
+
     protected function __construct(
         private string $value,
         private int $scale,
@@ -49,8 +51,21 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             throw new WrongDecimalFormatException($value);
         }
 
-        $parts = explode('.', $value);
-        $scale = count($parts) > 1 ? strlen($parts[1]) : 0;
+        if (str_contains($value, '.')) {
+            $parts = explode('.', $value);
+            $parts[1] = rtrim($parts[1], '0');
+            $parts[1] = rtrim($parts[1], '.');
+
+            if (empty($parts[1])) {
+                $scale = 0;
+                $value = $parts[0];
+            } else {
+                $scale = strlen($parts[1]);
+                $value = "$parts[0].$parts[1]";
+            }
+        } else {
+            $scale = 0;
+        }
 
         return [$value, $scale];
     }
@@ -243,7 +258,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->minus($other);
     }
 
-    public function dividedBy(self|int|string $other): self
+    public function dividedBy(self|int|string $other, int|null $scale = null): self
     {
         $other = self::from($other);
 
@@ -251,14 +266,38 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             throw new DivisionByZeroException();
         }
 
-        // TODO: scale calculation
-        $scale = $this->scale + $other->scale + 4;
+        if ($other->eq('1') && (is_null($scale) || $scale >= $this->scale)) {
+            return $this;
+        }
 
-        return self::from(bcdiv(
+        if (is_null($scale)) {
+            return self::from(bcdiv(
+                $this->value,
+                $other->value,
+                scale: max($this->scale, $other->scale, self::MIN_DIV_SCALE),
+            ));
+        }
+
+        $result = bcdiv(
             $this->value,
             $other->value,
-            scale: $scale,
-        ));
+            scale: $scale + 1,
+        );
+
+        $lastDigit = (int) substr($result, -1);
+        $truncated = substr($result, 0, -1);
+
+        if ($lastDigit < 5) {
+            return self::from($truncated);
+        }
+
+        $unit = bcpow('0.1', (string) $scale, scale: $scale);
+
+        if ($result[0] === '-') {
+            return self::from(bcsub($truncated, $unit, scale: $scale));
+        }
+
+        return self::from(bcadd($truncated, $unit, scale: $scale));
     }
 
     public function inverse(): self

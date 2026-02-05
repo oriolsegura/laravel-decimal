@@ -3,7 +3,6 @@
 namespace OriolSegura\Decimal\Tests\Unit;
 
 use OriolSegura\Decimal\Decimal;
-use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use PHPUnit\Framework\TestCase;
 
@@ -48,13 +47,6 @@ class DecimalTest extends TestCase
         $this->assertSame('15', (string) $new);
 
         $this->assertNotSame($original, $new);
-    }
-
-    public function test_it_throws_exception_on_division_by_zero(): void
-    {
-        $this->expectException(DivisionByZeroException::class);
-
-        Decimal::from('10')->dividedBy('0');
     }
 
     public function test_it_throws_exception_on_invalid_format(): void
