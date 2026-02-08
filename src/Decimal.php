@@ -127,26 +127,21 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
 
     public function jsonSerialize(): string
     {
-        return (string) $this;
+        return $this->value;
     }
 
     // ──────────────────────────────
-    // Utility methods
+    // Getters
     // ──────────────────────────────
+
+    public function toString(): string
+    {
+        return $this->value;
+    }
 
     public function getScale(): int
     {
         return $this->scale;
-    }
-
-    public function clone(): self
-    {
-        return clone $this;
-    }
-
-    public function copy(): self
-    {
-        return clone $this;
     }
 
     // ──────────────────────────────
