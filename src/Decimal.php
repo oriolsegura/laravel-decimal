@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OriolSegura\Decimal;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;

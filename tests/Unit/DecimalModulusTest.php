@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OriolSegura\Decimal\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
