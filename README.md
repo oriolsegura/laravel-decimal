@@ -12,9 +12,7 @@ It uses `bcmath` internally to ensure mathematical correctness where floats fail
 
 ## 🚀 Why use this package?
 
-Designed for **simplicity and immediate productivity**.
-If you need to handle money or precise numbers in Laravel but don't want the overhead of heavy financial libraries
-or complex configurations, this is for you.
+Designed for **simplicity and immediate productivity**. If you need to handle money or precise numbers in Laravel but don't want the overhead of heavy financial libraries or complex configurations, this is for you.
 
 * **Plug & Play:** Zero configuration. Works out of the box.
 * **Laravel Native:** Built with Eloquent casting in mind.
@@ -48,8 +46,7 @@ composer require oriolsegura/laravel-decimal
 
 ## Eloquent Casting
 
-This package shines when used with Eloquent models. You can store values as precise decimals (or strings) in your
-database and work with Decimal objects automatically in your code.
+This package shines when used with Eloquent models. You can store values as precise decimals (or strings) in your database and work with Decimal objects automatically in your code.
 
 1. Define the cast in your Model:
 
@@ -133,9 +130,7 @@ And these are the implemented methods for comparisons:
 
 ## Division & Rounding
 
-By default, division uses an automatic scale equal to the maximum of the two operands scales,
-ensuring this is also at least 12 decimal places to ensure precision. But you can also
-provide a `$scale` parameter to specify the number of decimal places in the result.
+By default, division uses an automatic scale equal to the maximum of the two operands scales, ensuring this is also at least 12 decimal places to ensure precision. But you can also provide a `$scale` parameter to specify the number of decimal places in the result.
 
 Currently, this library only supports Half-Up Rounding for division.
 
@@ -145,6 +140,23 @@ echo Decimal::from(1)->div(3); // "0.333333333333"
 
 // Explicit scale (Rounds Half-Up)
 echo Decimal::from(2)->div(3, scale: 2); // "0.67"
+```
+
+## Safe Expression Evaluator
+
+Laravel Decimal includes a robust, zero-dependency mathematical expression parser based on the [Shunting yard algorithm](https://en.wikipedia.org/wiki/Shunting_yard_algorithm). It respects order of operations, nested parentheses, and handles unary negative numbers safely.
+
+```php
+echo Decimal::resolve('(10.5 + 2) * -1.5 / 2'); // '-9.375'
+```
+
+Thanks to the `__toString()` implementation, you can even interpolate existing Decimal instances directly into your expression strings for ultimate readability:
+
+```php
+$base = Decimal::from('100');
+$taxRate = Decimal::from('0.21');
+
+echo Decimal::resolve("$base + ($base * $taxRate)"); // '121'
 ```
 
 ## License

@@ -32,6 +32,7 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-f": "vendor/bin/phpunit --filter",
+        "test-c": "vendor/bin/phpunit --coverage-text",
         "format": "vendor/bin/pint"
     },
     "autoload": {

@@ -9,6 +9,8 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use JsonSerializable;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
+use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
+use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use Stringable;
 
@@ -85,6 +87,18 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         }
 
         return [$value, $scale];
+    }
+
+    /**
+     * Resolve a mathematical expression string into a Decimal instance.
+     *
+     * @throws InvalidExpressionException
+     * @throws UnknownMathematicalOperatorException
+     * @throws WrongDecimalFormatException
+     */
+    public static function resolve(string $expression): self
+    {
+        return (new ExpressionEvaluator())->evaluate($expression);
     }
 
     /**

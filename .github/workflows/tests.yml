@@ -18,9 +18,11 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: bcmath
+          coverage: pcov
+          tools: composer:v2
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction
+        run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Execute tests
-        run: vendor/bin/phpunit
+      - name: Execute tests with coverage
+        run: vendor/bin/phpunit --coverage-text

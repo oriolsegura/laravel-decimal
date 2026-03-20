@@ -10,6 +10,6 @@ class DivisionByZeroException extends RuntimeException implements DecimalExcepti
 {
     public function __construct()
     {
-        parent::__construct(message: 'Attempt to divide by zero.');
+        parent::__construct(message: 'Attempt to divide by zero');
     }
 }

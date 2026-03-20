@@ -12,6 +12,6 @@ class WrongDecimalFormatException extends RuntimeException implements DecimalExc
     {
         $value = is_scalar($given) ? (string) $given : gettype($given);
 
-        parent::__construct(message: "Wrong decimal format given: [$value].");
+        parent::__construct(message: "Wrong decimal format given: [$value]");
     }
 }
