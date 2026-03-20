@@ -15,4 +15,10 @@
             <text outputFile="php://stdout" showUncoveredFiles="false" />
         </report>
     </coverage>
+    <source>
+        <include>
+            <directory>src</directory>
+            <file>helpers/helpers.php</file>
+        </include>
+    </source>
 </phpunit>

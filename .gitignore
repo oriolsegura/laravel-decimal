@@ -12,6 +12,7 @@ vendor/
 # PHPUnit
 .phpunit.result.cache
 phpunit.xml
+coverage-report/
 
 # Tests and coverage
 coverage/
