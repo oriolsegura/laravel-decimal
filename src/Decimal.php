@@ -22,9 +22,7 @@ use Stringable;
  */
 final readonly class Decimal implements Castable, JsonSerializable, Stringable
 {
-    private const MIN_DIV_SCALE = 12;
-
-    protected function __construct(
+    private function __construct(
         private string $value,
         private int $scale,
     ) {}
@@ -49,9 +47,10 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      * Parse and validate the input value.
      *
      * @return array{0: string, 1: int} Returns [string value, int scale]
+     *
      * @throws WrongDecimalFormatException
      */
-    public static function validateAndAnalyze(int|string|null $value): array
+    private static function validateAndAnalyze(int|string|null $value): array
     {
         if (is_null($value)) {
             $value = 0;
@@ -70,7 +69,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         }
 
         if (str_contains($value, '.')) {
-            $parts = explode('.', $value);
+            $parts    = explode('.', $value);
             $parts[1] = rtrim($parts[1], '0');
             $parts[1] = rtrim($parts[1], '.');
 
@@ -103,17 +102,17 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     {
         return new class implements CastsAttributes
         {
-            public function get(Model $model, string $key, mixed $value, array $attributes): Decimal|null
+            public function get(Model $model, string $key, mixed $value, array $attributes): null|Decimal
             {
                 return is_null($value) ? null : Decimal::from($value);
             }
 
-            public function set(Model $model, string $key, mixed $value, array $attributes): string|null
+            public function set(Model $model, string $key, mixed $value, array $attributes): null|string
             {
                 return is_null($value) ? null : (string) $value;
             }
 
-            public function serialize(Model $model, string $key, mixed $value, array $attributes): string|null
+            public function serialize(Model $model, string $key, mixed $value, array $attributes): null|string
             {
                 return is_null($value) ? null : (string) $value;
             }
@@ -134,11 +133,6 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     // Getters
     // ──────────────────────────────
 
-    public function toString(): string
-    {
-        return $this->value;
-    }
-
     public function getScale(): int
     {
         return $this->scale;
@@ -148,7 +142,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     // Comparisons
     // ──────────────────────────────
 
-    protected function cmp(self|int|string $other): int
+    public function cmp(self|int|string $other): int
     {
         $other = self::from($other);
 
@@ -157,6 +151,11 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             $other->value,
             scale: max($this->scale, $other->scale),
         );
+    }
+
+    public function compare(self|int|string $other): int
+    {
+        return $this->cmp($other);
     }
 
     public function eq(self|int|string $other): bool
@@ -357,12 +356,12 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      *
      * @throws DivisionByZeroException
      */
-    public function dividedBy(self|int|string $other, int|null $scale = null): self
+    public function dividedBy(self|int|string $other, null|int $scale = null): self
     {
         $other = self::from($other);
 
         if ($other->isZero()) {
-            throw new DivisionByZeroException();
+            throw new DivisionByZeroException;
         }
 
         if ($other->eq('1') && (is_null($scale) || $scale >= $this->scale)) {
@@ -373,7 +372,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             return self::from(bcdiv(
                 $this->value,
                 $other->value,
-                scale: max($this->scale, $other->scale, self::MIN_DIV_SCALE),
+                scale: max($this->scale, $other->scale, DECIMAL_MIN_DIV_SCALE),
             ));
         }
 
@@ -402,7 +401,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     /**
      * @throws DivisionByZeroException
      */
-    public function div(self|int|string $other, int|null $scale = null): self
+    public function div(self|int|string $other, null|int $scale = null): self
     {
         return $this->dividedBy($other, scale: $scale);
     }
@@ -420,13 +419,13 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         $other = self::from($other);
 
         if ($other->isZero()) {
-            throw new DivisionByZeroException();
+            throw new DivisionByZeroException;
         }
 
         return self::from(bcmod(
             $this->value,
             $other->value,
-            scale: max($this->scale, $other->scale, self::MIN_DIV_SCALE),
+            scale: max($this->scale, $other->scale, DECIMAL_MIN_DIV_SCALE),
         ));
     }
 
@@ -516,5 +515,13 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function toFloat(): float
     {
         return (float) $this->value;
+    }
+
+    /**
+     * Converts the value to a native PHP string.
+     */
+    public function toString(): string
+    {
+        return $this->value;
     }
 }

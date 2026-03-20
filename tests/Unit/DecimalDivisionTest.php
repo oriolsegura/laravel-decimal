@@ -86,7 +86,7 @@ class DecimalDivisionTest extends TestCase
 
     public function test_it_handles_carry_over_rounding(): void
     {
-        $d = Decimal::from('1.99996');
+        $d      = Decimal::from('1.99996');
         $result = $d->dividedBy(1, scale: 2);
 
         $this->assertSame('2', (string) $result);

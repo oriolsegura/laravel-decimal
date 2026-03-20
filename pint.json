@@ -1,0 +1,60 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "declare_strict_types": true,
+        "array_indentation": true,
+        "simplified_null_return": true,
+        "new_with_parentheses": false,
+        "concat_space": {
+            "spacing": "one"
+        },
+        "fully_qualified_strict_types": true,
+        "ordered_imports": {
+            "imports_order": [
+                "class",
+                "function",
+                "const"
+            ],
+            "sort_algorithm": "alpha"
+        },
+        "single_quote": true,
+        "void_return": true,
+        "combine_consecutive_issets": true,
+        "combine_consecutive_unsets": true,
+        "modernize_types_casting": true,
+        "no_unused_imports": true,
+        "binary_operator_spaces": {
+            "default": "align_single_space_minimal",
+            "operators": {
+                "+": "single_space",
+                "-": "single_space",
+                "*": "single_space"
+            }
+        },
+        "nullable_type_declaration": {
+            "syntax": "union"
+        },
+        "control_structure_continuation_position": {
+            "position": "same_line"
+        },
+        "braces_position": {
+            "anonymous_classes_opening_brace": "next_line_unless_newline_at_signature_end",
+            "anonymous_functions_opening_brace": "same_line",
+            "classes_opening_brace": "next_line_unless_newline_at_signature_end",
+            "control_structures_opening_brace": "same_line",
+            "functions_opening_brace": "next_line_unless_newline_at_signature_end"
+        },
+        "trailing_comma_in_multiline": {
+            "elements": [
+                "arguments",
+                "arrays",
+                "array_destructuring",
+                "match",
+                "parameters"
+            ]
+        }
+    },
+    "exclude": [
+        "database/migrations"
+    ]
+}

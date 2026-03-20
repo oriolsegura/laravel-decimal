@@ -88,6 +88,8 @@ $a = Decimal::from('10.50');
 $b = Decimal::from(10);
 ```
 
+Additionally, a `Decimal::zero()` static method is available for convenience.
+
 ### Arithmetic
 
 Since the object is immutable, operations always return a new instance.
@@ -114,6 +116,7 @@ These are the implemented methods for arithmetic operations:
 
 And these are the implemented methods for comparisons:
 
+- `cmp(self|int|string $other)` (alias: `compare`)
 - `eq(self|int|string $other)` (alias: `equals`)
 - `ne(self|int|string $other)` (alias: `notEquals`, `diff`)
 - `gt(self|int|string $other)` (alias: `greaterThan`)

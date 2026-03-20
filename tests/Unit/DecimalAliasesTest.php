@@ -11,7 +11,7 @@ class DecimalAliasesTest extends TestCase
 {
     public function test_it_checks_arithmetic_aliases(): void
     {
-        $base = Decimal::from(10);
+        $base  = Decimal::from(10);
         $other = 5;
 
         // 1. ADDITION (Canonical: plus)

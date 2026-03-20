@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace OriolSegura\Decimal\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
 use OriolSegura\Decimal\Decimal;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
+use PHPUnit\Framework\TestCase;
 
 class DecimalModulusTest extends TestCase
 {

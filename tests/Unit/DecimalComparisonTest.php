@@ -20,7 +20,7 @@ class DecimalComparisonTest extends TestCase
 
     public function test_it_checks_greater_and_less_than(): void
     {
-        $ten = Decimal::from(10);
+        $ten  = Decimal::from(10);
         $five = Decimal::from(5);
 
         $this->assertTrue($ten->gt($five));
@@ -33,8 +33,8 @@ class DecimalComparisonTest extends TestCase
 
     public function test_it_checks_positivity_and_negativity(): void
     {
-        $pos = Decimal::from('+0.00000000000000000000000000000000000000000000001');
-        $neg = Decimal::from('-0.00000000000000000000000000000000000000000000001');
+        $pos  = Decimal::from('+0.00000000000000000000000000000000000000000000001');
+        $neg  = Decimal::from('-0.00000000000000000000000000000000000000000000001');
         $zero = Decimal::zero();
 
         // Positive

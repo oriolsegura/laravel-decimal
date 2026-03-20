@@ -54,7 +54,7 @@ class DecimalTest extends TestCase
     public function test_it_throws_exception_on_invalid_format(): void
     {
         $this->expectException(WrongDecimalFormatException::class);
-        $this->expectExceptionMessage("Wrong decimal format given: [abc]");
+        $this->expectExceptionMessage('Wrong decimal format given: [abc]');
 
         Decimal::from('abc');
     }
