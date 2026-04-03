@@ -35,7 +35,7 @@ echo var_dump(0.3 === (0.1 + 0.2)); // bool(false) ❌
 ## 🛠️ Requirements
 
 - PHP 8.2+
-- Laravel 11.0+ / 12.0+
+- Laravel 11.0+ / 12.0+ / 13.0+
 - `ext-bcmath`
 
 ## Installation
