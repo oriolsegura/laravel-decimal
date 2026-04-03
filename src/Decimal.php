@@ -40,9 +40,25 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             return $value;
         }
 
+        if (is_null($value)) {
+            trigger_error('Passing null to Decimal::from() is deprecated and will throw a TypeError in future versions. Use Decimal::parse() instead.', E_USER_DEPRECATED);
+            $value = 0;
+        }
+
         [$strValue, $scale] = self::validateAndAnalyze($value);
 
         return new self($strValue, $scale);
+    }
+
+    /**
+     * Create a new Decimal instance from a string, integer, or another Decimal.
+     * Null is allowed and will return a zero-value Decimal.
+     *
+     * @throws WrongDecimalFormatException If the format is invalid.
+     */
+    public static function parse(self|int|string|null $value): self
+    {
+        return self::from($value ?? '0');
     }
 
     /**
@@ -52,17 +68,12 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      *
      * @throws WrongDecimalFormatException
      */
-    private static function validateAndAnalyze(int|string|null $value): array
+    private static function validateAndAnalyze(int|string $value): array
     {
-        if (is_null($value)) {
-            $value = 0;
-        }
-
         if (is_int($value)) {
             return [(string) $value, 0];
         }
 
-        $value = (string) $value;
         $value = trim($value);
         $value = ltrim($value, '+');
 
@@ -98,7 +109,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      */
     public static function resolve(string $expression): self
     {
-        return (new ExpressionEvaluator())->evaluate($expression);
+        return (new ExpressionEvaluator)->evaluate($expression);
     }
 
     /**
@@ -156,6 +167,9 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     // Comparisons
     // ──────────────────────────────
 
+    /**
+     * Return 0 if the two operands are equal, 1 if the <code>$this</code> is larger than <code>$other</code>, -1 otherwise.
+     */
     public function cmp(self|int|string $other): int
     {
         $other = self::from($other);

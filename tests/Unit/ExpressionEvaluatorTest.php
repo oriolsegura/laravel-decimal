@@ -86,6 +86,13 @@ class ExpressionEvaluatorTest extends TestCase
         Decimal::resolve('5 + a * 2');
     }
 
+    public function test_it_throws_exception_on_unknown_operator(): void
+    {
+        $this->expectException(UnknownMathematicalOperatorException::class);
+
+        Decimal::resolve('5 ^ 3');
+    }
+
     public function test_it_throws_exception_on_empty_expression(): void
     {
         $this->expectException(InvalidExpressionException::class);

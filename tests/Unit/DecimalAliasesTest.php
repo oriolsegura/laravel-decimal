@@ -55,6 +55,15 @@ class DecimalAliasesTest extends TestCase
         $b = Decimal::from(10);
         $c = Decimal::from(5);
 
+        // 1. COMPARE (Canonical: cmp)
+        // Alias: compare
+        $this->assertEquals(0, $a->cmp($b));
+        $this->assertEquals(0, $a->compare($b));
+        $this->assertEquals(1, $a->cmp($c));
+        $this->assertEquals(1, $a->compare($c));
+        $this->assertEquals(-1, $c->cmp($a));
+        $this->assertEquals(-1, $c->compare($a));
+
         // 1. EQUALS (Canonical: eq)
         // Alias: equals
         $this->assertTrue($a->eq($b));

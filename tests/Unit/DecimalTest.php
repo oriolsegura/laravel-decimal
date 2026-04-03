@@ -25,6 +25,10 @@ class DecimalTest extends TestCase
         // Case 3: From another Decimal
         $d3 = Decimal::from($d2);
         $this->assertSame('10.505', (string) $d3);
+
+        // Case 4: From null
+        $d4 = Decimal::parse(null);
+        $this->assertSame('0', (string) $d4);
     }
 
     public function test_it_solves_simple_floating_point_problem(): void
@@ -39,6 +43,18 @@ class DecimalTest extends TestCase
         $this->assertSame(1, $result->getScale());
     }
 
+    public function test_it_calculates_absolute_value(): void
+    {
+        $negative = Decimal::from('-42.75');
+        $this->assertSame('42.75', $negative->abs()->toString());
+
+        $positive = Decimal::from('42.75');
+        $this->assertSame('42.75', $positive->abs()->toString());
+
+        $zero = Decimal::from('0');
+        $this->assertSame('0', $zero->abs()->toString());
+    }
+
     public function test_it_handles_immutability(): void
     {
         $original = Decimal::from('10');
@@ -49,6 +65,14 @@ class DecimalTest extends TestCase
         $this->assertSame('15', (string) $new);
 
         $this->assertNotSame($original, $new);
+    }
+
+    public function test_it_serializes_to_json_correctly(): void
+    {
+        $decimal = Decimal::from('123.45');
+
+        $this->assertSame('123.45', $decimal->jsonSerialize());
+        $this->assertSame('"123.45"', json_encode($decimal));
     }
 
     public function test_it_throws_exception_on_invalid_format(): void
