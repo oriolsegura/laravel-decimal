@@ -7,6 +7,7 @@ namespace OriolSegura\Decimal;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 use JsonSerializable;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
@@ -509,6 +510,37 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         }
 
         return $this;
+    }
+
+    // ──────────────────────────────
+    // Rounding & Truncation
+    // ──────────────────────────────
+
+    public function truncate(int $scale = 0): self
+    {
+        if ($scale < 0) {
+            throw new InvalidArgumentException('Scale cannot be negative.');
+        }
+
+        return self::from(bcadd($this->value, '0', $scale));
+    }
+
+    public function roundUp(int $scale = 0): self
+    {
+        if ($scale < 0) {
+            throw new InvalidArgumentException('Scale cannot be negative.');
+        }
+
+        if ($scale >= $this->scale) {
+            return $this;
+        }
+
+        $truncated = bcadd($this->value, '0', $scale);
+
+        return match (bccomp($this->value, $truncated, $this->scale)) {
+            1       => self::from(bcadd($truncated, $scale > 0 ? '0.' . str_repeat('0', $scale - 1) . '1' : '1', $scale)),
+            default => self::from($truncated),
+        };
     }
 
     // ──────────────────────────────

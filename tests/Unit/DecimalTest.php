@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OriolSegura\Decimal\Tests\Unit;
 
+use InvalidArgumentException;
 use OriolSegura\Decimal\Decimal;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +27,11 @@ class DecimalTest extends TestCase
         $d3 = Decimal::from($d2);
         $this->assertSame('10.505', (string) $d3);
 
-        // Case 4: From null
+        // Case 4: From null (deprecated)
+        $d4 = Decimal::from(null);
+        $this->assertSame('0', (string) $d4);
+
+        // Case 5: From null (new)
         $d4 = Decimal::parse(null);
         $this->assertSame('0', (string) $d4);
     }
@@ -81,5 +86,44 @@ class DecimalTest extends TestCase
         $this->expectExceptionMessage('Wrong decimal format given: [abc]');
 
         Decimal::from('abc');
+    }
+
+    public function test_it_truncates_values_correctly(): void
+    {
+        $this->assertSame('12.34', Decimal::from('12.349')->truncate(2)->toString());
+        $this->assertSame('12', Decimal::from('12.99')->truncate(0)->toString());
+
+        $this->assertSame('-12.34', Decimal::from('-12.349')->truncate(2)->toString());
+        $this->assertSame('-12', Decimal::from('-12.99')->truncate(0)->toString());
+
+        $this->assertSame('0', Decimal::from('0.99')->truncate(0)->toString());
+        $this->assertSame('0', Decimal::from('0')->truncate(2)->toString());
+    }
+
+    public function test_truncate_throws_exception_on_negative_scale(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Decimal::from('10.5')->truncate(-1);
+    }
+
+    public function test_it_rounds_up_values_correctly(): void
+    {
+        $this->assertSame('13', Decimal::from('12.01')->roundUp(0)->toString());
+        $this->assertSame('12.35', Decimal::from('12.341')->roundUp(2)->toString());
+
+        $this->assertSame('12.34', Decimal::from('12.340')->roundUp(2)->toString());
+
+        $this->assertSame('-12', Decimal::from('-12.99')->roundUp(0)->toString());
+        $this->assertSame('-12.34', Decimal::from('-12.349')->roundUp(2)->toString());
+        $this->assertSame('-12.34', Decimal::from('-12.340')->roundUp(2)->toString());
+
+        $this->assertSame('0', Decimal::from('0')->roundUp(0)->toString());
+        $this->assertSame('0', Decimal::from('0')->roundUp(2)->toString());
+    }
+
+    public function test_round_up_throws_exception_on_negative_scale(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Decimal::from('10.5')->roundUp(-1);
     }
 }

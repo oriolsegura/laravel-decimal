@@ -129,6 +129,11 @@ class Product extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'price_double',
+        'price_decimal',
+    ];
+
     protected $casts = [
         'price_decimal' => Decimal::class,
         'price_double'  => 'double',
