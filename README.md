@@ -128,6 +128,11 @@ And these are the implemented methods for comparisons:
 - `min(self|int|string $other, self|int|string ...$values)`
 - `max(self|int|string $other, self|int|string ...$values)`
 
+Support is also given for truncation and rounding:
+
+- `truncate(int $scale = 0)`
+- `roundUp(int $scale = 0)`
+
 ## Division & Rounding
 
 By default, division uses an automatic scale equal to the maximum of the two operands scales, ensuring this is also at least 12 decimal places to ensure precision. But you can also provide a `$scale` parameter to specify the number of decimal places in the result.
