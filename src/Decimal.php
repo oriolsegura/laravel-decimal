@@ -85,7 +85,6 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         if (str_contains($value, '.')) {
             $parts    = explode('.', $value);
             $parts[1] = rtrim($parts[1], '0');
-            $parts[1] = rtrim($parts[1], '.');
 
             if (empty($parts[1])) {
                 $scale = 0;
@@ -411,7 +410,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             scale: $scale + 1,
         );
 
-        $lastDigit = (int) substr($result, -1);
+        $lastDigit = substr($result, -1);
         $truncated = substr($result, 0, -1);
 
         if ($lastDigit < 5) {

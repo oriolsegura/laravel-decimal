@@ -6,11 +6,33 @@ namespace OriolSegura\Decimal\Tests\Unit;
 
 use InvalidArgumentException;
 use OriolSegura\Decimal\Decimal;
+use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
+use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
+use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use PHPUnit\Framework\TestCase;
 
 class DecimalTest extends TestCase
 {
+    public function test_it_triggers_deprecation_warning_when_passing_null_to_from(): void
+    {
+        $triggered = false;
+        set_error_handler(function ($errno, $errstr) use (&$triggered): bool {
+            if ($errno === E_USER_DEPRECATED && str_contains($errstr, 'Passing null to Decimal::from() is deprecated')) {
+                $triggered = true;
+            }
+
+            return true;
+        });
+
+        $decimal = Decimal::from(null);
+        $this->assertSame('0', (string) $decimal);
+
+        restore_error_handler();
+
+        $this->assertTrue($triggered, 'Deprecation warning was not triggered');
+    }
+
     public function test_it_instantiates_correctly_and_detects_scale(): void
     {
         // Case 1: Integer
@@ -27,13 +49,15 @@ class DecimalTest extends TestCase
         $d3 = Decimal::from($d2);
         $this->assertSame('10.505', (string) $d3);
 
-        // Case 4: From null (deprecated)
-        $d4 = Decimal::from(null);
-        $this->assertSame('0', (string) $d4);
-
-        // Case 5: From null (new)
+        // Case 5: From null
         $d4 = Decimal::parse(null);
         $this->assertSame('0', (string) $d4);
+
+        // Case 6: Parse with value
+        $this->assertSame('5', Decimal::parse('5')->toString());
+
+        // Case 7: Trim input
+        $this->assertSame('10.5', Decimal::from('  10.5  ')->toString());
     }
 
     public function test_it_solves_simple_floating_point_problem(): void
@@ -88,6 +112,23 @@ class DecimalTest extends TestCase
         Decimal::from('abc');
     }
 
+    public function test_it_rejects_invalid_prefixes_and_suffixes(): void
+    {
+        try {
+            Decimal::from('abc1.23');
+            $this->fail('Should have thrown WrongDecimalFormatException');
+        } catch (WrongDecimalFormatException $e) {
+            $this->assertStringContainsString('Wrong decimal format given: [abc1.23]', $e->getMessage());
+        }
+
+        try {
+            Decimal::from('1.23abc');
+            $this->fail('Should have thrown WrongDecimalFormatException');
+        } catch (WrongDecimalFormatException $e) {
+            $this->assertStringContainsString('Wrong decimal format given: [1.23abc]', $e->getMessage());
+        }
+    }
+
     public function test_it_truncates_values_correctly(): void
     {
         $this->assertSame('12.34', Decimal::from('12.349')->truncate(2)->toString());
@@ -98,6 +139,9 @@ class DecimalTest extends TestCase
 
         $this->assertSame('0', Decimal::from('0.99')->truncate(0)->toString());
         $this->assertSame('0', Decimal::from('0')->truncate(2)->toString());
+
+        // Default scale
+        $this->assertSame('10', Decimal::from('10.55')->truncate()->toString());
     }
 
     public function test_truncate_throws_exception_on_negative_scale(): void
@@ -119,11 +163,33 @@ class DecimalTest extends TestCase
 
         $this->assertSame('0', Decimal::from('0')->roundUp(0)->toString());
         $this->assertSame('0', Decimal::from('0')->roundUp(2)->toString());
+
+        // Default scale
+        $this->assertSame('11', Decimal::from('10.55')->roundUp()->toString());
+
+        // Same or higher scale returns same object
+        $d = Decimal::from('10.55');
+        $this->assertSame($d, $d->roundUp(2));
+        $this->assertSame($d, $d->roundUp(5));
+
+        // Precision check
+        $this->assertSame('11', Decimal::from('10.000000000000000000000000000000000000001')->roundUp(0)->toString());
+        $this->assertSame('10.6', Decimal::from('10.55')->roundUp(1)->toString());
     }
 
     public function test_round_up_throws_exception_on_negative_scale(): void
     {
         $this->expectException(InvalidArgumentException::class);
         Decimal::from('10.5')->roundUp(-1);
+    }
+
+    public function test_exception_messages(): void
+    {
+        $this->assertSame('Attempt to divide by zero', (new DivisionByZeroException())->getMessage());
+        $this->assertSame('Invalid mathematical expression', (new InvalidExpressionException())->getMessage());
+        $this->assertSame('Unknown operator: %', (new UnknownMathematicalOperatorException('%'))->getMessage());
+
+        $this->assertSame('Wrong decimal format given: [array]', (new WrongDecimalFormatException(['a']))->getMessage());
+        $this->assertSame('Wrong decimal format given: []', (new WrongDecimalFormatException(false))->getMessage());
     }
 }

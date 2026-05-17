@@ -7,6 +7,7 @@ namespace OriolSegura\Decimal\Tests\Unit;
 use OriolSegura\Decimal\Decimal;
 use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
 use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
+use OriolSegura\Decimal\ExpressionEvaluator;
 use PHPUnit\Framework\TestCase;
 
 class ExpressionEvaluatorTest extends TestCase
@@ -21,6 +22,11 @@ class ExpressionEvaluatorTest extends TestCase
     {
         $this->assertSame('14', Decimal::resolve('2 + 3 * 4')->toString());
         $this->assertSame('14', Decimal::resolve('20 - 12 / 2')->toString());
+
+        $eval = new ExpressionEvaluator();
+        $this->assertSame('2', $eval->evaluate('10 / 5 * 1')->toString());
+        $this->assertSame('10', $eval->evaluate('10 * 1 / 1')->toString());
+        $this->assertSame('2', $eval->evaluate('1 - 2 + 3')->toString());
     }
 
     public function test_it_handles_parentheses(): void
@@ -39,6 +45,15 @@ class ExpressionEvaluatorTest extends TestCase
         $this->assertSame('-2', Decimal::resolve('-5 + 3')->toString());
         $this->assertSame('-15', Decimal::resolve('5 * -3')->toString());
         $this->assertSame('-8', Decimal::resolve('-10 - -2')->toString());
+
+        // Test double unary minus
+        $eval = new ExpressionEvaluator();
+        try {
+            $eval->evaluate('--5');
+            $this->fail('Should have thrown UnknownMathematicalOperatorException');
+        } catch (UnknownMathematicalOperatorException $e) {
+            $this->assertStringContainsString('Unknown operator: --5', $e->getMessage());
+        }
     }
 
     public function test_it_evaluates_expressions_using_decimal_string_interpolation(): void
@@ -97,5 +112,17 @@ class ExpressionEvaluatorTest extends TestCase
     {
         $this->expectException(InvalidExpressionException::class);
         Decimal::resolve('   ');
+    }
+
+    public function test_it_throws_exception_on_invalid_parentheses_placement(): void
+    {
+        $eval = new ExpressionEvaluator();
+
+        try {
+            $eval->evaluate('1 ( 2 + 3');
+            $this->fail('Should have thrown InvalidExpressionException');
+        } catch (InvalidExpressionException $e) {
+            $this->assertSame('Invalid mathematical expression', $e->getMessage());
+        }
     }
 }

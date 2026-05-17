@@ -52,6 +52,23 @@ class DecimalComparisonTest extends TestCase
         $this->assertTrue($zero->isNegative());
     }
 
+    public function test_it_compares_high_precision_numbers_precisely(): void
+    {
+        // Numbers close to each other but beyond float precision
+        $n1 = '1.000000000000000000000000000000000000001';
+        $n2 = '1.000000000000000000000000000000000000002';
+
+        $d1 = Decimal::from($n1);
+        $d2 = Decimal::from($n2);
+
+        $this->assertSame(-1, $d1->compare($n2));
+        $this->assertTrue($d1->lt($d2));
+
+        // Different lengths and padding
+        $this->assertSame(0, Decimal::from('1.5')->compare('1.500000000000000000000000000'));
+        $this->assertSame(1, Decimal::from('10')->compare('2'));
+    }
+
     public function test_it_finds_min_and_max_values(): void
     {
         $a = Decimal::from(10);

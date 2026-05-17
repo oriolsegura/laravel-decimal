@@ -53,6 +53,10 @@ class DecimalDivisionTest extends TestCase
         // Division by 1 with greater scale, returns the same object
         $resultB = $d->dividedBy(1, scale: 5);
         $this->assertSame($d, $resultB);
+
+        // Division by 1 with equal scale, returns the same object
+        $resultC = $d->dividedBy(1, scale: 1);
+        $this->assertSame($d, $resultC);
     }
 
     public function test_it_bypasses_optimization_when_rounding_is_needed(): void
@@ -99,5 +103,55 @@ class DecimalDivisionTest extends TestCase
 
         $result2 = Decimal::from(-1)->dividedBy(3, scale: 2);
         $this->assertSame('-0.33', (string) $result2);
+    }
+
+    public function test_it_performs_arithmetic_precisely_on_large_numbers(): void
+    {
+        $n1 = '1' . str_repeat('0', 40);
+        $n2 = '0.0000000000000000000000000000000000000001';
+
+        $d1 = Decimal::from($n1);
+        $d2 = Decimal::from($n2);
+
+        // Addition
+        $sum = $d1->plus($d2);
+        $this->assertSame($n1 . '.0000000000000000000000000000000000000001', $sum->toString());
+
+        // Subtraction
+        $diff = $sum->minus($d2);
+        $this->assertSame($n1, $diff->toString());
+
+        // Multiplication
+        $m1  = Decimal::from('1' . str_repeat('0', 30));
+        $m2  = Decimal::from('1' . str_repeat('0', 30));
+        $mul = $m1->mul($m2);
+        $this->assertSame('1' . str_repeat('0', 60), $mul->toString());
+
+        // Division with scale
+        $div = Decimal::from('1')->dividedBy('3', 40);
+        $this->assertSame('0.' . str_repeat('3', 40), $div->toString());
+
+        // Division without scale (uses DECIMAL_MIN_DIV_SCALE = 12)
+        $div2 = Decimal::from('1')->dividedBy('3');
+        $this->assertSame('0.333333333333', $div2->toString());
+        $this->assertSame(12, $div2->getScale());
+    }
+
+    public function test_rounding_carry_precision(): void
+    {
+        // Use over 30 digits to ensure float addition loses precision
+        // base has 29 decimals, ends in 0.
+        $base = '1.23456789012345678901234567890';
+        $d    = Decimal::from($base . '9'); // scale 30, last digit is 9
+
+        // Round to scale 29. Digit at 30 is 9 (>= 5).
+        // Truncated is $base (scale 29). Unit is 10^-29.
+        // Result should be 1.23456789012345678901234567891
+        $result = $d->dividedBy(1, 29);
+        $this->assertSame('1.23456789012345678901234567891', $result->toString());
+
+        $negative  = Decimal::from('-' . $base . '9');
+        $resultNeg = $negative->dividedBy(1, 29);
+        $this->assertSame('-1.23456789012345678901234567891', $resultNeg->toString());
     }
 }

@@ -87,7 +87,7 @@ final readonly class ExpressionEvaluator
                 while (count($operators) > 0 && end($operators) !== '(') {
                     $output[] = array_pop($operators);
                 }
-                if (count($operators) === 0 || end($operators) !== '(') {
+                if (count($operators) === 0) {
                     throw new InvalidExpressionException;
                 }
                 array_pop($operators);
@@ -137,11 +137,10 @@ final readonly class ExpressionEvaluator
                 $left  = array_pop($stack);
 
                 $stack[] = match ($token) {
-                    '+'     => $left->plus($right),
-                    '-'     => $left->minus($right),
-                    '*'     => $left->mul($right),
-                    '/'     => $left->div($right),
-                    default => throw new UnknownMathematicalOperatorException($token),
+                    '+' => $left->plus($right),
+                    '-' => $left->minus($right),
+                    '*' => $left->mul($right),
+                    '/' => $left->div($right),
                 };
             }
         }
