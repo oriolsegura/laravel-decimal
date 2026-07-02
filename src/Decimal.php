@@ -7,6 +7,7 @@ namespace OriolSegura\Decimal;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JsonSerializable;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
@@ -509,6 +510,24 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         }
 
         return $this;
+    }
+
+    // ──────────────────────────────
+    // Collection Aggregates
+    // ──────────────────────────────
+
+    /**
+     * Sum a field across all items in a Collection.
+     * $field can be a property name string or a callable that receives each item and returns a Decimal-compatible value.
+     */
+    public static function collectionSum(Collection $collection, string|callable $field): self
+    {
+        return $collection->reduce(
+            fn (self $acc, $item) => $acc->sum(
+                is_callable($field) ? $field($item) : $item->$field,
+            ),
+            self::zero(),
+        );
     }
 
     // ──────────────────────────────
