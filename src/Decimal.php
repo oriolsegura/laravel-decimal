@@ -310,26 +310,32 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     // Arithmetics
     // ──────────────────────────────
 
-    public function plus(self|int|string $other): self
+    public function plus(self|int|string $other, self|int|string ...$others): self
     {
         $other = self::from($other);
         $scale = max($this->scale, $other->scale);
 
-        return self::from(bcadd(
+        $result = self::from(bcadd(
             $this->value,
             $other->value,
             scale: $scale,
         ));
+
+        foreach ($others as $value) {
+            $result = $result->plus($value);
+        }
+
+        return $result;
     }
 
-    public function add(self|int|string $other): self
+    public function add(self|int|string $other, self|int|string ...$others): self
     {
-        return $this->plus($other);
+        return $this->plus($other, ...$others);
     }
 
-    public function sum(self|int|string $other): self
+    public function sum(self|int|string $other, self|int|string ...$others): self
     {
-        return $this->plus($other);
+        return $this->plus($other, ...$others);
     }
 
     public function minus(self|int|string $other): self
@@ -354,26 +360,32 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return $this->minus($other);
     }
 
-    public function times(self|int|string $other): self
+    public function times(self|int|string $other, self|int|string ...$others): self
     {
         $other = self::from($other);
         $scale = $this->scale + $other->scale;
 
-        return self::from(bcmul(
+        $result = self::from(bcmul(
             $this->value,
             $other->value,
             scale: $scale,
         ));
+
+        foreach ($others as $value) {
+            $result = $result->times($value);
+        }
+
+        return $result;
     }
 
-    public function mul(self|int|string $other): self
+    public function mul(self|int|string $other, self|int|string ...$others): self
     {
-        return $this->times($other);
+        return $this->times($other, ...$others);
     }
 
-    public function multiply(self|int|string $other): self
+    public function multiply(self|int|string $other, self|int|string ...$others): self
     {
-        return $this->times($other);
+        return $this->times($other, ...$others);
     }
 
     /**

@@ -192,4 +192,40 @@ class DecimalTest extends TestCase
         $this->assertSame('Wrong decimal format given: [array]', (new WrongDecimalFormatException(['a']))->getMessage());
         $this->assertSame('Wrong decimal format given: []', (new WrongDecimalFormatException(false))->getMessage());
     }
+
+    public function test_it_can_sum_multiple_values_with_variadic_arguments(): void
+    {
+        $base = Decimal::from('10.5');
+
+        $resultPlus = $base->plus(2, '3.05', Decimal::from('1.2'));
+
+        $this->assertSame('16.75', $resultPlus->toString());
+        $this->assertSame(2, $resultPlus->getScale());
+
+        $values    = ['2', 3, Decimal::from('2.000')];
+        $resultSum = $base->sum(...$values);
+
+        $this->assertSame('17.5', $resultSum->toString());
+        $this->assertSame(1, $resultSum->getScale());
+
+        $this->assertSame('16.75', $base->add(2, '3.05', Decimal::from('1.2'))->toString());
+    }
+
+    public function test_it_can_multiply_multiple_values_with_variadic_arguments(): void
+    {
+        $base = Decimal::from('2.5');
+
+        $resultTimes = $base->times(2, '1.5', Decimal::from('3.10'));
+
+        $this->assertSame('23.25', $resultTimes->toString());
+        $this->assertSame(2, $resultTimes->getScale());
+
+        $factors        = ['2', Decimal::from('0.5'), 4];
+        $resultMultiply = $base->multiply(...$factors);
+
+        $this->assertSame('10', $resultMultiply->toString());
+        $this->assertSame(0, $resultMultiply->getScale());
+
+        $this->assertSame('23.25', $base->mul(2, '1.5', Decimal::from('3.10'))->toString());
+    }
 }

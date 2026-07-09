@@ -121,9 +121,9 @@ echo Decimal::from(2)->div(3, scale: 2); // "0.67"
 
 These are the implemented methods for arithmetic operations:
 
-- `plus(self|int|string $other)` (aliases: `add`, `sum`)
+- `plus(self|int|string $other, self|int|string ...$others)` (aliases: `add`, `sum`)
 - `minus(self|int|string $other)` (aliases: `take`, `subtract`)
-- `times(self|int|string $other)` (aliases: `mul`, `multiply`)
+- `times(self|int|string $other, self|int|string ...$others)` (aliases: `mul`, `multiply`)
 - `dividedBy(self|int|string $other, int|null $scale = null)` (alias: `div`)
 - `inverse(null|int $scale = null)` (aliases: `inv`, `reciprocal`)
 - `mod(self|int|string $other)` (aliases: `modulo`, `remainder`)
@@ -151,6 +151,24 @@ Support is also given for truncation and rounding:
 
 - `truncate(int $scale = 0)`
 - `roundUp(int $scale = 0)`
+
+### Operate with Collections
+
+Both the sum and multiplication methods leverage PHP's variadic arguments, making them incredibly easy to apply to collections:
+
+```php
+$sum = $initial->sum(...$collection->pluck('value'));
+// or if no initial value is needed:
+$sum = Decimal::zero()->sum(...$collection->pluck('value'));
+```
+
+This clean syntax completely replaces the traditional, much more verbose `reduce` pattern:
+
+```php
+$sum = $collection->reduce(function (Decimal $carry, $item): Decimal {
+    return $carry->plus($item->value);
+}, initial: $initial);
+```
 
 ## License
 
