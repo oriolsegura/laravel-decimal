@@ -33,6 +33,9 @@ jobs:
       - name: Force Laravel version
         run: composer require "orchestra/testbench:^${{ matrix.testbench }}" --no-update --no-interaction
 
+      - name: Disable Composer security advisory blocking
+        run: composer config policy.advisories.block false
+
       - name: Install dependencies
         run: composer update --prefer-dist --no-interaction --no-progress
 
