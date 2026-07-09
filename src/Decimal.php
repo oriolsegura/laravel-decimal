@@ -477,19 +477,28 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     // Special Operations
     // ──────────────────────────────
 
-    public function inverse(): self
+    /**
+     * @throws DivisionByZeroException
+     */
+    public function inverse(null|int $scale = null): self
     {
-        return self::from('1')->dividedBy($this);
+        return self::from('1')->dividedBy($this, scale: $scale);
     }
 
-    public function inv(): self
+    /**
+     * @throws DivisionByZeroException
+     */
+    public function inv(null|int $scale = null): self
     {
-        return $this->inverse();
+        return $this->inverse(scale: $scale);
     }
 
-    public function reciprocal(): self
+    /**
+     * @throws DivisionByZeroException
+     */
+    public function reciprocal(null|int $scale = null): self
     {
-        return $this->inverse();
+        return $this->inverse(scale: $scale);
     }
 
     public function negate(): self
