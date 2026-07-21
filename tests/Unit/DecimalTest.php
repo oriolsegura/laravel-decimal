@@ -150,6 +150,32 @@ class DecimalTest extends TestCase
         Decimal::from('10.5')->truncate(-1);
     }
 
+    public function test_it_rounds_values_correctly(): void
+    {
+        $this->assertSame('12.35', Decimal::from('12.349')->round(2)->toString());
+        $this->assertSame('13', Decimal::from('12.99')->round(0)->toString());
+
+        $this->assertSame('-12.35', Decimal::from('-12.349')->round(2)->toString());
+        $this->assertSame('-13', Decimal::from('-12.99')->round(0)->toString());
+
+        $this->assertSame('1', Decimal::from('0.99')->round(0)->toString());
+        $this->assertSame('0', Decimal::from('0')->round(2)->toString());
+
+        // Default scale
+        $this->assertSame('11', Decimal::from('10.55')->round()->toString());
+
+        // Same or higher scale returns same object
+        $d = Decimal::from('10.55');
+        $this->assertSame($d, $d->round(2));
+        $this->assertSame($d, $d->round(5));
+    }
+
+    public function test_round_throws_exception_on_negative_scale(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        Decimal::from('10.5')->round(-1);
+    }
+
     public function test_it_rounds_up_values_correctly(): void
     {
         $this->assertSame('13', Decimal::from('12.01')->roundUp(0)->toString());

@@ -150,6 +150,7 @@ And these are the implemented methods for comparisons:
 Support is also given for truncation and rounding:
 
 - `truncate(int $scale = 0)`
+- `round(int $scale = 0)`
 - `roundUp(int $scale = 0)`
 
 ### Operate with Collections
