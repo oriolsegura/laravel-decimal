@@ -6,6 +6,7 @@ namespace OriolSegura\Decimal\Tests\Unit;
 
 use OriolSegura\Decimal\Decimal;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
+use OriolSegura\Decimal\Exceptions\ScaleCannotBeNegativeException;
 use PHPUnit\Framework\TestCase;
 
 class DecimalDivisionTest extends TestCase
@@ -153,5 +154,12 @@ class DecimalDivisionTest extends TestCase
         $negative  = Decimal::from('-' . $base . '9');
         $resultNeg = $negative->dividedBy(1, 29);
         $this->assertSame('-1.23456789012345678901234567891', $resultNeg->toString());
+    }
+
+    public function test_divided_by_throws_exception_on_negative_scale(): void
+    {
+        $this->expectException(ScaleCannotBeNegativeException::class);
+        $this->expectExceptionMessage('Scale cannot be negative: -1');
+        Decimal::from('10.5')->dividedBy(0, scale: -1);
     }
 }

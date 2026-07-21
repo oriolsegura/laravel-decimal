@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace OriolSegura\Decimal\Tests\Unit;
 
-use InvalidArgumentException;
 use OriolSegura\Decimal\Decimal;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
+use OriolSegura\Decimal\Exceptions\ScaleCannotBeNegativeException;
 use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use PHPUnit\Framework\TestCase;
@@ -146,8 +146,36 @@ class DecimalTest extends TestCase
 
     public function test_truncate_throws_exception_on_negative_scale(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ScaleCannotBeNegativeException::class);
+        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->truncate(-1);
+    }
+
+    public function test_it_rounds_values_correctly(): void
+    {
+        $this->assertSame('12.35', Decimal::from('12.349')->round(2)->toString());
+        $this->assertSame('13', Decimal::from('12.99')->round(0)->toString());
+
+        $this->assertSame('-12.35', Decimal::from('-12.349')->round(2)->toString());
+        $this->assertSame('-13', Decimal::from('-12.99')->round(0)->toString());
+
+        $this->assertSame('1', Decimal::from('0.99')->round(0)->toString());
+        $this->assertSame('0', Decimal::from('0')->round(2)->toString());
+
+        // Default scale
+        $this->assertSame('11', Decimal::from('10.55')->round()->toString());
+
+        // Same or higher scale returns same object
+        $d = Decimal::from('10.55');
+        $this->assertSame($d, $d->round(2));
+        $this->assertSame($d, $d->round(5));
+    }
+
+    public function test_round_throws_exception_on_negative_scale(): void
+    {
+        $this->expectException(ScaleCannotBeNegativeException::class);
+        $this->expectExceptionMessage('Scale cannot be negative: -1');
+        Decimal::from('10.5')->round(-1);
     }
 
     public function test_it_rounds_up_values_correctly(): void
@@ -179,7 +207,8 @@ class DecimalTest extends TestCase
 
     public function test_round_up_throws_exception_on_negative_scale(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(ScaleCannotBeNegativeException::class);
+        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->roundUp(-1);
     }
 

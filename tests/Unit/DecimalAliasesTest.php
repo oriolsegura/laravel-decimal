@@ -115,4 +115,23 @@ class DecimalAliasesTest extends TestCase
         $this->assertSame($expected, (string) $d->negate());
         $this->assertSame($expected, (string) $d->neg());
     }
+
+    public function test_it_checks_rounding_aliases(): void
+    {
+        // 1. TRUNCATE (Canonical: truncate)
+        // Alias: floor
+        $d = Decimal::from('5.7');
+
+        $expected = '5';
+        $this->assertSame($expected, (string) $d->truncate());
+        $this->assertSame($expected, (string) $d->floor());
+
+        // 2. ROUND UP (Canonical: roundUp)
+        // Alias: ceil
+        $d = Decimal::from('5.2');
+
+        $expected = '6';
+        $this->assertSame($expected, (string) $d->roundUp());
+        $this->assertSame($expected, (string) $d->ceil());
+    }
 }

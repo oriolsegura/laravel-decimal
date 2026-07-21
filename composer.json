@@ -34,8 +34,8 @@
         "test": "vendor/bin/phpunit",
         "test-f": "vendor/bin/phpunit --filter",
         "test-c": "vendor/bin/phpunit --coverage-text",
-        "test-i": "vendor/bin/infection",
-        "format": "vendor/bin/pint"
+        "test-i": "vendor/bin/infection --ansi",
+        "format": "vendor/bin/pint --ansi"
     },
     "autoload": {
         "psr-4": {

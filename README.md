@@ -149,8 +149,9 @@ And these are the implemented methods for comparisons:
 
 Support is also given for truncation and rounding:
 
-- `truncate(int $scale = 0)`
-- `roundUp(int $scale = 0)`
+- `truncate(int $scale = 0)` (alias: `floor`)
+- `round(int $scale = 0)`
+- `roundUp(int $scale = 0)` (alias: `ceil`)
 
 ### Operate with Collections
 
@@ -168,6 +169,14 @@ This clean syntax completely replaces the traditional, much more verbose `reduce
 $sum = $collection->reduce(function (Decimal $carry, $item): Decimal {
     return $carry->plus($item->value);
 }, initial: $initial);
+```
+
+Which can be even simpler thanks to the helper function:
+
+```php
+use function OriolSegura\sum;
+$sum = sum(...$collection->pluck('value'));
+$sum = sum(...$collection->pluck('value'), initial: 64);
 ```
 
 ## License

@@ -7,10 +7,10 @@ namespace OriolSegura\Decimal;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
 use JsonSerializable;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
+use OriolSegura\Decimal\Exceptions\ScaleCannotBeNegativeException;
 use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use Stringable;
@@ -398,6 +398,10 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      */
     public function dividedBy(self|int|string $other, null|int $scale = null): self
     {
+        if ($scale < 0) {
+            throw new ScaleCannotBeNegativeException($scale);
+        }
+
         $other = self::from($other);
 
         if ($other->isZero()) {
@@ -422,20 +426,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             scale: $scale + 1,
         );
 
-        $lastDigit = substr($result, -1);
-        $truncated = substr($result, 0, -1);
-
-        if ($lastDigit < 5) {
-            return self::from($truncated);
-        }
-
-        $unit = bcpow('0.1', (string) $scale, scale: $scale);
-
-        if ($result[0] === '-') {
-            return self::from(bcsub($truncated, $unit, scale: $scale));
-        }
-
-        return self::from(bcadd($truncated, $unit, scale: $scale));
+        return self::from($result)->round(scale: $scale);
     }
 
     /**
@@ -539,16 +530,35 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function truncate(int $scale = 0): self
     {
         if ($scale < 0) {
-            throw new InvalidArgumentException('Scale cannot be negative.');
+            throw new ScaleCannotBeNegativeException($scale);
         }
 
         return self::from(bcadd($this->value, '0', $scale));
     }
 
+    public function round(int $scale = 0): self
+    {
+        if ($scale < 0) {
+            throw new ScaleCannotBeNegativeException($scale);
+        }
+
+        if ($scale >= $this->scale) {
+            return $this;
+        }
+
+        $modifier = '0.' . str_repeat('0', $scale) . '5';
+
+        if (str_starts_with($this->value, '-')) {
+            return self::from(bcsub($this->value, $modifier, $scale));
+        }
+
+        return self::from(bcadd($this->value, $modifier, $scale));
+    }
+
     public function roundUp(int $scale = 0): self
     {
         if ($scale < 0) {
-            throw new InvalidArgumentException('Scale cannot be negative.');
+            throw new ScaleCannotBeNegativeException($scale);
         }
 
         if ($scale >= $this->scale) {
@@ -561,6 +571,16 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             1       => self::from(bcadd($truncated, $scale > 0 ? '0.' . str_repeat('0', $scale - 1) . '1' : '1', $scale)),
             default => self::from($truncated),
         };
+    }
+
+    public function floor(): self
+    {
+        return $this->truncate();
+    }
+
+    public function ceil(): self
+    {
+        return $this->roundUp();
     }
 
     // ──────────────────────────────
