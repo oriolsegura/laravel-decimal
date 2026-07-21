@@ -7,10 +7,10 @@ namespace OriolSegura\Decimal;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
 use JsonSerializable;
 use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\InvalidExpressionException;
+use OriolSegura\Decimal\Exceptions\ScaleCannotBeNegativeException;
 use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use Stringable;
@@ -399,7 +399,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function dividedBy(self|int|string $other, null|int $scale = null): self
     {
         if ($scale < 0) {
-            throw new InvalidArgumentException('Scale cannot be negative.');
+            throw new ScaleCannotBeNegativeException($scale);
         }
 
         $other = self::from($other);
@@ -530,7 +530,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function truncate(int $scale = 0): self
     {
         if ($scale < 0) {
-            throw new InvalidArgumentException('Scale cannot be negative.');
+            throw new ScaleCannotBeNegativeException($scale);
         }
 
         return self::from(bcadd($this->value, '0', $scale));
@@ -539,7 +539,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function round(int $scale = 0): self
     {
         if ($scale < 0) {
-            throw new InvalidArgumentException('Scale cannot be negative.');
+            throw new ScaleCannotBeNegativeException($scale);
         }
 
         if ($scale >= $this->scale) {
@@ -558,7 +558,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     public function roundUp(int $scale = 0): self
     {
         if ($scale < 0) {
-            throw new InvalidArgumentException('Scale cannot be negative.');
+            throw new ScaleCannotBeNegativeException($scale);
         }
 
         if ($scale >= $this->scale) {
