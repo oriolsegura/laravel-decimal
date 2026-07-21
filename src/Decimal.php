@@ -573,6 +573,16 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         };
     }
 
+    public function floor(): self
+    {
+        return $this->truncate();
+    }
+
+    public function ceil(): self
+    {
+        return $this->roundUp();
+    }
+
     // ──────────────────────────────
     // Checks & Converters
     // ──────────────────────────────
