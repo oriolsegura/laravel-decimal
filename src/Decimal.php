@@ -398,6 +398,10 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      */
     public function dividedBy(self|int|string $other, null|int $scale = null): self
     {
+        if ($scale < 0) {
+            throw new InvalidArgumentException('Scale cannot be negative.');
+        }
+
         $other = self::from($other);
 
         if ($other->isZero()) {
