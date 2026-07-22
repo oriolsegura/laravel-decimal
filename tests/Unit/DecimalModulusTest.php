@@ -28,13 +28,19 @@ class DecimalModulusTest extends TestCase
     public function test_it_throws_exception_on_modulo_by_zero(): void
     {
         $this->expectException(DivisionByZeroException::class);
-
         Decimal::from(10)->mod(0);
     }
 
     public function test_it_handles_negative_modulus(): void
     {
-        $this->assertSame('-1', (string) Decimal::from(-10)->mod(3));
-        $this->assertSame('1', (string) Decimal::from(10)->mod(-3));
+        $this->assertSame('0.9', (string) Decimal::from('10.5')->mod('3.2'));
+        $this->assertSame('-0.9', (string) Decimal::from('-10.5')->mod('3.2'));
+        $this->assertSame('0.9', (string) Decimal::from('10.5')->mod('-3.2'));
+        $this->assertSame('-0.9', (string) Decimal::from('-10.5')->mod('-3.2'));
+    }
+
+    public function test_it_uses_enough_scale(): void
+    {
+        $this->assertSame('0.000001', (string) Decimal::parse('100')->mod('0.000003'));
     }
 }

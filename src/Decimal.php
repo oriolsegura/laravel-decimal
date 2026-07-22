@@ -15,6 +15,8 @@ use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use Stringable;
 
+use const OriolSegura\DIV_SCALE;
+
 /**
  * @author Oriol Segura <oriol.segura.nino@gmail.com>
  *
@@ -416,7 +418,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             return self::from(bcdiv(
                 $this->value,
                 $other->value,
-                scale: max($this->scale, $other->scale, DECIMAL_MIN_DIV_SCALE),
+                scale: max($this->scale, $other->scale, DIV_SCALE),
             ));
         }
 
@@ -440,9 +442,6 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     /**
      * Get the modulus of the division. Its sign matches the dividend's ($this).
      *
-     * It uses an automatic scale equal to the maximum of the two operands scales,
-     * ensuring this is also at least 12 decimal places to ensure precision
-     *
      * @throws DivisionByZeroException
      */
     public function mod(self|int|string $other): self
@@ -456,7 +455,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return self::from(bcmod(
             $this->value,
             $other->value,
-            scale: max($this->scale, $other->scale, DECIMAL_MIN_DIV_SCALE),
+            scale: max($this->scale, $other->scale),
         ));
     }
 

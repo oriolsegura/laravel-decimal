@@ -7,7 +7,7 @@ namespace OriolSegura;
 use Illuminate\Contracts\Support\Arrayable;
 use OriolSegura\Decimal\Decimal;
 
-if (! function_exists(__NAMESPACE__ . '\sum')) {
+if (! function_exists(__NAMESPACE__ . '\\sum')) {
     /**
      * Helper function to reduce a list of items by addition.
      */
@@ -19,9 +19,18 @@ if (! function_exists(__NAMESPACE__ . '\sum')) {
     }
 }
 
-if (! defined('DECIMAL_MIN_DIV_SCALE')) {
+if (! defined(__NAMESPACE__ . '\\DIV_SCALE')) {
     /**
      * Minimum scale used for Decimal divisions.
      */
-    define('DECIMAL_MIN_DIV_SCALE', 12);
+    define(__NAMESPACE__ . '\\DIV_SCALE', 12);
+}
+
+if (! defined('DECIMAL_MIN_DIV_SCALE')) {
+    /**
+     * Minimum scale used for Decimal divisions.
+     *
+     * @deprecated 0.11.1 Use OriolSegura\DIV_SCALE instead.
+     */
+    define('DECIMAL_MIN_DIV_SCALE', DIV_SCALE);
 }
