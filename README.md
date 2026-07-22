@@ -83,8 +83,8 @@ You can create a Decimal from a string, integer or another Decimal.
 $val = Decimal::from('10.50');
 
 $result = $val->plus('5.50')
-              ->minus(2)
-              ->times(2);
+              ->minus(2)  // you could also use the string "2" but using integers when
+              ->times(2); // possible is a good practice because they are parsed faster
 
 echo $val; // "10.50" (original value remains unchanged)
 echo $result; // "28.00" (new Decimal instance with the result)
