@@ -9,6 +9,8 @@ use OriolSegura\Decimal\Exceptions\DivisionByZeroException;
 use OriolSegura\Decimal\Exceptions\ScaleCannotBeNegativeException;
 use PHPUnit\Framework\TestCase;
 
+use const OriolSegura\DIV_SCALE;
+
 class DecimalDivisionTest extends TestCase
 {
     public function test_it_throws_exception_on_division_by_zero(): void
@@ -132,10 +134,10 @@ class DecimalDivisionTest extends TestCase
         $div = Decimal::from('1')->dividedBy('3', 40);
         $this->assertSame('0.' . str_repeat('3', 40), $div->toString());
 
-        // Division without scale (uses DECIMAL_MIN_DIV_SCALE = 12)
+        // Division without scale (uses OriolSegura\DIV_SCALE = 12)
         $div2 = Decimal::from('1')->dividedBy('3');
         $this->assertSame('0.333333333333', $div2->toString());
-        $this->assertSame(12, $div2->getScale());
+        $this->assertSame(DIV_SCALE, $div2->getScale());
     }
 
     public function test_rounding_carry_precision(): void
@@ -159,7 +161,6 @@ class DecimalDivisionTest extends TestCase
     public function test_divided_by_throws_exception_on_negative_scale(): void
     {
         $this->expectException(ScaleCannotBeNegativeException::class);
-        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->dividedBy(0, scale: -1);
     }
 }

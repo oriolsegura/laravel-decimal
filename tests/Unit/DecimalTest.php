@@ -147,7 +147,6 @@ class DecimalTest extends TestCase
     public function test_truncate_throws_exception_on_negative_scale(): void
     {
         $this->expectException(ScaleCannotBeNegativeException::class);
-        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->truncate(-1);
     }
 
@@ -174,7 +173,6 @@ class DecimalTest extends TestCase
     public function test_round_throws_exception_on_negative_scale(): void
     {
         $this->expectException(ScaleCannotBeNegativeException::class);
-        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->round(-1);
     }
 
@@ -208,7 +206,6 @@ class DecimalTest extends TestCase
     public function test_round_up_throws_exception_on_negative_scale(): void
     {
         $this->expectException(ScaleCannotBeNegativeException::class);
-        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->roundUp(-1);
     }
 
@@ -217,6 +214,7 @@ class DecimalTest extends TestCase
         $this->assertSame('Attempt to divide by zero', (new DivisionByZeroException())->getMessage());
         $this->assertSame('Invalid mathematical expression', (new InvalidExpressionException())->getMessage());
         $this->assertSame('Unknown operator: %', (new UnknownMathematicalOperatorException('%'))->getMessage());
+        $this->assertSame('Scale cannot be negative: -5', (new ScaleCannotBeNegativeException(-5))->getMessage());
 
         $this->assertSame('Wrong decimal format given: [array]', (new WrongDecimalFormatException(['a']))->getMessage());
         $this->assertSame('Wrong decimal format given: []', (new WrongDecimalFormatException(false))->getMessage());

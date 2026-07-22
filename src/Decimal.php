@@ -15,6 +15,8 @@ use OriolSegura\Decimal\Exceptions\UnknownMathematicalOperatorException;
 use OriolSegura\Decimal\Exceptions\WrongDecimalFormatException;
 use Stringable;
 
+use const OriolSegura\DIV_SCALE;
+
 /**
  * @author Oriol Segura <oriol.segura.nino@gmail.com>
  *
@@ -59,7 +61,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      */
     public static function parse(self|int|string|null $value): self
     {
-        return self::from($value ?? '0');
+        return self::from($value ?? 0);
     }
 
     /**
@@ -75,29 +77,24 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             return [(string) $value, 0];
         }
 
-        $value = trim($value);
-        $value = ltrim($value, '+');
+        $value = ltrim(trim($value), '+');
 
-        if (! preg_match('/^-?\d+(\.\d+)?$/', $value)) {
+        if (! preg_match('/^(-?\d+)(?:\.(\d+))?$/', $value, $matches)) {
             throw new WrongDecimalFormatException($value);
         }
 
-        if (str_contains($value, '.')) {
-            $parts    = explode('.', $value);
-            $parts[1] = rtrim($parts[1], '0');
-
-            if (empty($parts[1])) {
-                $scale = 0;
-                $value = $parts[0];
-            } else {
-                $scale = strlen($parts[1]);
-                $value = "$parts[0].$parts[1]";
-            }
-        } else {
-            $scale = 0;
+        // There is no decimal part
+        if (! isset($matches[2])) {
+            return [$matches[1], 0];
         }
 
-        return [$value, $scale];
+        $fraction = rtrim($matches[2], '0');
+
+        if ($fraction === '') {
+            return [$matches[1], 0];
+        }
+
+        return ["$matches[1].$fraction", strlen($fraction)];
     }
 
     /**
@@ -117,7 +114,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
      */
     public static function zero(): self
     {
-        return self::from('0');
+        return self::from(0);
     }
 
     /**
@@ -416,7 +413,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
             return self::from(bcdiv(
                 $this->value,
                 $other->value,
-                scale: max($this->scale, $other->scale, DECIMAL_MIN_DIV_SCALE),
+                scale: max($this->scale, $other->scale, DIV_SCALE),
             ));
         }
 
@@ -440,9 +437,6 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
     /**
      * Get the modulus of the division. Its sign matches the dividend's ($this).
      *
-     * It uses an automatic scale equal to the maximum of the two operands scales,
-     * ensuring this is also at least 12 decimal places to ensure precision
-     *
      * @throws DivisionByZeroException
      */
     public function mod(self|int|string $other): self
@@ -456,7 +450,7 @@ final readonly class Decimal implements Castable, JsonSerializable, Stringable
         return self::from(bcmod(
             $this->value,
             $other->value,
-            scale: max($this->scale, $other->scale, DECIMAL_MIN_DIV_SCALE),
+            scale: max($this->scale, $other->scale),
         ));
     }
 
