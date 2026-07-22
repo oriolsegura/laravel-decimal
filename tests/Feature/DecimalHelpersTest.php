@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OriolSegura\Decimal\Tests\Feature;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Orchestra\Testbench\TestCase;
 use OriolSegura\Decimal\Decimal;
 
@@ -43,5 +44,24 @@ class DecimalHelpersTest extends TestCase
             Decimal::zero()->sum(...$collection),
             sum($collection),
         );
+
+        $dto = new OrderTotalDto($array);
+
+        $this->assertEquals(
+            Decimal::zero()->sum(...$dto->toArray()),
+            sum($dto),
+        );
+    }
+}
+
+readonly class OrderTotalDto implements Arrayable
+{
+    public function __construct(
+        private array $items,
+    ) {}
+
+    public function toArray(): array
+    {
+        return $this->items;
     }
 }

@@ -13,7 +13,9 @@ if (! function_exists(__NAMESPACE__ . '\sum')) {
      */
     function sum(array|Arrayable $values, Decimal|int|string|null $initial = null): Decimal
     {
-        return Decimal::parse($initial)->sum(...$values);
+        $items = $values instanceof Arrayable ? $values->toArray() : $values;
+
+        return Decimal::parse($initial)->sum(...$items);
     }
 }
 
