@@ -7,7 +7,7 @@ namespace OriolSegura;
 use Illuminate\Contracts\Support\Arrayable;
 use OriolSegura\Decimal\Decimal;
 
-if (! function_exists('sum')) {
+if (! function_exists(__NAMESPACE__ . '\sum')) {
     /**
      * Helper function to reduce a list of items by addition.
      */

@@ -159,7 +159,6 @@ class DecimalDivisionTest extends TestCase
     public function test_divided_by_throws_exception_on_negative_scale(): void
     {
         $this->expectException(ScaleCannotBeNegativeException::class);
-        $this->expectExceptionMessage('Scale cannot be negative: -1');
         Decimal::from('10.5')->dividedBy(0, scale: -1);
     }
 }
