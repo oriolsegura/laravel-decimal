@@ -175,8 +175,8 @@ Which can be even simpler thanks to the helper function:
 
 ```php
 use function OriolSegura\sum;
-$sum = sum(...$collection->pluck('value'));
-$sum = sum(...$collection->pluck('value'), initial: 64);
+$sum = sum($collection->pluck('value'));
+$sum = sum($collection->pluck('value'), initial: 64);
 ```
 
 ## License
